@@ -1,0 +1,16 @@
+name: Contrôles
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  portail:
+    name: Portail, déploiement
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: bash -n deploy.sh
+      - run: npm install --no-save playwright@1.49.1 && npx playwright install --with-deps chromium
+      - run: node tests/portail.mjs
