@@ -6,7 +6,7 @@ Le portail n'a pas de connexion à lui : chaque espace garde la sienne (l'admin 
 
 ## Contenu
 
-- `public/` : le site, écrit à la main (HTML, CSS, un script de raccourcis). Polices Fredoka et Space Grotesk auto-hébergées (SIL OFL).
+- `public/` : le site, écrit à la main (HTML, CSS, un script de raccourcis). Style du kit de marque StudioGLSC (bleu #2447D6, Inter et Inter Display, monogramme inchangé, mode sombre) ; polices auto-hébergées (SIL OFL).
 - `deploy.sh` : installe nginx et le certificat HTTPS, sauvegarde l'existant, remplace le site de façon atomique, vérifie que les pages répondent et remet l'ancienne version sinon.
 - `deploy/pro-security.conf` : en-têtes de sécurité (CSP stricte sans code en ligne, HSTS, `noindex`) et cache.
 - `tests/portail.mjs` : contrôle des liens, de l'absence de code en ligne, des raccourcis et de l'affichage mobile.

@@ -187,7 +187,7 @@ verifier() { # $1 = chemin ; renvoie le code HTTP (000 si la connexion échoue),
   echo "$code"
 }
 if [ "$DRY" = 0 ]; then
-  for path in / /404.html /assets/pro.css /assets/pro.js /assets/fonts/fredoka-latin-700-normal.woff2 /robots.txt; do
+  for path in / /404.html /assets/pro.css /assets/pro.js /assets/fonts/inter-display-700.woff2 /robots.txt; do
     code="$(verifier "$path")"
     case "$code" in
       200) ok "$path → 200" ;;
