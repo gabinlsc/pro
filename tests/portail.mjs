@@ -35,11 +35,11 @@ await page.route('https://**', (r) => r.abort());
 await page.goto(base + '/'); await page.waitForSelector('.tile');
 assert.equal(await page.locator('.tile').count(), 3);
 assert.equal(await page.evaluate(() => localStorage.length + sessionStorage.length + document.cookie.length), 0);
-for (const [touche, url] of [['a', 'https://admin.glsc.fr'], ['s', 'https://studio.glsc.fr'], ['c', 'https://compta.glsc.fr']]) {
+for (const [touche, url] of [['e', base + '/espace/'], ['a', 'https://admin.glsc.fr'], ['s', 'https://studio.glsc.fr'], ['c', 'https://compta.glsc.fr']]) {
   const p2 = await page.context().newPage(); await p2.route('https://**', (r) => r.abort()); await p2.goto(base + '/'); await p2.waitForSelector('.tile');
   const nav = p2.waitForRequest((r) => r.url().startsWith(url), { timeout: 3000 }); await p2.keyboard.press(touche); await nav; await p2.close();
 }
-ok('raccourcis A, S, C : ouvrent bien chaque espace');
+ok('raccourcis E, A, S, C : ouvrent bien chaque espace');
 const m = await (await b.newContext({ viewport: { width: 360, height: 740 }, isMobile: true })).newPage(); await m.goto(base + '/');
 assert.ok(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)); ok('mobile 360 px : pas de défilement horizontal');
 assert.deepEqual(erreurs.filter((e) => !/admin\.glsc|studio\.glsc|compta\.glsc|ERR_FAILED|Failed to load/.test(e)), []);

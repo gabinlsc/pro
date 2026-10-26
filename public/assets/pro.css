@@ -49,3 +49,6 @@ kbd { margin-left: auto; padding: 0 8px; border: 1px solid var(--line-strong); b
 .d1 { animation-delay: .06s; } .d2 { animation-delay: .12s; } .d3 { animation-delay: .18s; } .d4 { animation-delay: .24s; }
 @media (max-width: 860px) { .tiles { grid-template-columns: 1fr; } .tile { min-height: 200px; } .hero { padding-bottom: 96px; } }
 @media (prefers-reduced-motion: reduce) { .rise { animation: none; } .tile, .go svg, .more a { transition: none; } }
+.espace { display: flex; align-items: center; gap: 22px; margin-bottom: 20px; padding: 26px 28px; border-radius: 24px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); text-decoration: none; color: var(--ink); transition: transform .18s, border-color .18s; }
+.espace:hover { transform: translateY(-3px); border-color: var(--accent); } .espace-texte { display: grid; flex: 1; } .espace-texte strong { font: 700 1.5rem/1.2 var(--display); letter-spacing: -.02em; } .espace-texte span { color: var(--muted); }
+.espace .go { margin: 0; } @media (max-width: 700px) { .espace { flex-direction: column; align-items: flex-start; } }
