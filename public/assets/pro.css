@@ -1,0 +1,38 @@
+:root { --cream:#FFFDF0; --ink:#111; --banana:#FFD84D; --mint:#7BE0AD; --lilac:#C3A6FF; --sky:#8FD3FF; --coral:#FF9478; --peach:#FFC9A8; --shadow:6px 6px 0 #000; }
+* { box-sizing: border-box; margin: 0; }
+html { -webkit-text-size-adjust: 100%; }
+body { min-height: 100vh; background: var(--cream); color: var(--ink); font: 500 1.0625rem/1.55 "Space Grotesk", system-ui, sans-serif; background-image: radial-gradient(rgba(0,0,0,.09) 1.5px, transparent 2px); background-size: 28px 28px; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, .disp { font-family: Fredoka, "Space Grotesk", sans-serif; font-weight: 700; letter-spacing: -.01em; }
+a { color: inherit; }
+:focus-visible { outline: 4px solid var(--ink); outline-offset: 4px; border-radius: 12px; }
+.skip { position: absolute; left: 16px; top: -64px; background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 12px; z-index: 10; }
+.skip:focus { top: 12px; }
+.wrap { width: min(1080px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 56px; }
+.top { display: flex; align-items: center; gap: 16px; }
+.top img { width: 56px; height: 56px; }
+.eyebrow { display: inline-block; background: #fff; border: 3px solid var(--ink); border-radius: 999px; padding: 4px 14px; font: 700 .8rem "Space Grotesk"; letter-spacing: .14em; text-transform: uppercase; box-shadow: 2px 2px 0 #000; transform: rotate(-2deg); }
+h1 { margin-top: 28px; font-size: clamp(3rem, 9vw, 5.5rem); line-height: .95; }
+h1 span { position: relative; display: inline-block; z-index: 0; }
+h1 span::after { content: ""; position: absolute; left: -2%; right: -2%; bottom: .06em; height: .32em; background: var(--banana); z-index: -1; border-radius: 8px; transform: rotate(-1deg); }
+.lead { margin-top: 18px; max-width: 36rem; font-size: 1.25rem; }
+.tiles { list-style: none; padding: 0; margin-top: 44px; display: grid; gap: 24px; grid-template-columns: repeat(3, 1fr); }
+.tiles li { display: flex; } .tile { flex: 1; position: relative; display: flex; flex-direction: column; min-height: 300px; padding: 28px; border: 4px solid var(--ink); border-radius: 24px; box-shadow: var(--shadow); text-decoration: none; transition: transform .15s, box-shadow .15s; }
+.tile:hover { transform: translate(-3px, -3px) rotate(-.4deg); box-shadow: 9px 9px 0 #000; }
+.tile:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 #000; }
+.tile .ic { display: grid; place-items: center; width: 64px; height: 64px; background: #fff; border: 3px solid var(--ink); border-radius: 18px; box-shadow: 2px 2px 0 #000; }
+.tile .ic svg { width: 32px; height: 32px; fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.tile h2 { margin-top: auto; padding-top: 28px; font-size: 2.2rem; line-height: 1; }
+.tile p { margin-top: 8px; }
+.tile .go { margin-top: 18px; display: inline-flex; align-items: center; gap: 10px; align-self: flex-start; background: var(--ink); color: #fff; border-radius: 12px; padding: 8px 14px; font-weight: 700; }
+.tile kbd { background: #fff; color: var(--ink); border-radius: 6px; padding: 0 7px; font: 700 .85rem "Space Grotesk"; }
+.tile .badge { position: absolute; top: 24px; right: 24px; transform: rotate(4deg); background: #fff; border: 3px solid var(--ink); border-radius: 10px; padding: 2px 10px; font: 700 .75rem "Space Grotesk"; letter-spacing: .1em; text-transform: uppercase; }
+.admin { background: var(--sky); } .studio { background: var(--lilac); } .compta { background: var(--mint); }
+.more { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 14px; }
+.more a { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 3px solid var(--ink); border-radius: 14px; padding: 10px 18px; font-weight: 700; text-decoration: none; box-shadow: 3px 3px 0 #000; transition: transform .15s, box-shadow .15s; }
+.more a:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 #000; }
+.foot { margin-top: 48px; font-size: .95rem; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px) rotate(1.5deg); } to { opacity: 1; transform: none; } }
+.rise { animation: rise .55s cubic-bezier(.2, .9, .3, 1.2) both; }
+.d1 { animation-delay: .05s; } .d2 { animation-delay: .14s; } .d3 { animation-delay: .23s; } .d4 { animation-delay: .32s; }
+@media (max-width: 860px) { .tiles { grid-template-columns: 1fr; } .tile { min-height: 220px; } }
+@media (prefers-reduced-motion: reduce) { .rise { animation: none; } .tile, .more a { transition: none; } }
