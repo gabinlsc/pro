@@ -108,6 +108,8 @@ main#contenu { padding: 32px clamp(16px, 4vw, 48px) 72px; max-width: 1240px; wid
 .feuille-note, .feuille-paiement { margin-top: 8px !important; color: #3a4357; } .feuille-signature { margin-top: 20px; } .feuille-signature-case { height: 70px; border: 1px solid #cfd5e1; border-radius: 4px; margin-top: 6px; }
 .feuille-mentions { margin-top: 22px; padding-top: 10px; border-top: 1px solid #e1e5ed; font-size: .76rem; color: #3a4357; } .feuille-mentions p + p { margin-top: 3px; }
 
+.facturx h3 { display: flex; gap: 8px; align-items: center; font-size: 1rem; } .facturx h3 .ico { color: var(--link); } .facturx-manques { display: grid; gap: 6px; font-size: .9rem; color: var(--warn-ink); background: var(--warn-bg); border-radius: 12px; padding: 12px 14px; } .facturx-manques li { display: flex; gap: 8px; align-items: flex-start; } .facturx .btn[aria-busy="true"] { opacity: .6; }
+
 /* dialogues, notifications */
 .dialogue { width: min(94vw, 520px); max-height: 92vh; padding: 0; border: 0; border-radius: 24px; background: var(--surface); color: var(--ink); box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .5); overflow: auto; } .dialogue.large { width: min(94vw, 680px); } .dialogue::backdrop { background: rgba(11, 18, 32, .55); backdrop-filter: blur(3px); }
 .dialogue header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 0; } .dialogue-corps { padding: 16px 24px; } .dialogue footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; padding: 8px 24px 22px; }
