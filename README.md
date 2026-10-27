@@ -13,11 +13,12 @@ Clients, devis, factures, avoirs, paiements, recettes, échéances et tableau de
 - **Tableau de bord** : encaissé de l'année, reste à encaisser, factures en retard, plafond de chiffre d'affaires, prochaine déclaration.
 - **Documents** : numérotation continue, mentions légales issues des données officielles, aperçu en direct, statuts (brouillon, envoyé, accepté, payé…), paiements partiels, devis converti en facture ou en acompte, avoir, impression en PDF, courriel prérempli.
 - **Recettes** : livre des recettes alimenté par les paiements des factures et par des saisies manuelles ; totaux par mois et par période de déclaration ; alerte de plafond ; export CSV.
+- **Facture électronique (Factur-X)** : PDF/A-3 qui embarque `factur-x.xml` (profil EN 16931), généré dans le navigateur et validé par Mustang (PDF/A-3b, schématrons européens, règles françaises). Voir [docs/facturation-electronique.md](docs/facturation-electronique.md).
 - **Échéances** : déclarations, CFE, facturation électronique, avec rappels dans l'agenda (fichier `.ics`).
 - **Données** : enregistrées dans IndexedDB seulement après le clic sur « Créer mon espace ». Export JSON, export **chiffré** (AES-GCM, clé dérivée du mot de passe par PBKDF2), import, effacement complet.
 - Les calculs, les validations et les mentions viennent des modules de [Compta by glsc](https://github.com/gabinlsc/compta), copiés tels quels dans `public/espace/js/lib/` avec leurs données vérifiées (`public/espace/data/regles.json`). Pour les mettre à jour : `npm run sync` (avec le dépôt `compta` à côté), puis relire le diff.
 
-Organisation du code (`public/espace/js/`) : `donnees.js` (modèle et nettoyage de tout ce qui entre), `store.js` et `stockage.js` (état et IndexedDB), `stats.js` (calculs, testés sous Node), `crypto.js` (sauvegarde chiffrée), `ui.js` (jamais d'`innerHTML`), `vues/` (une vue par page) et `main.js` (routeur).
+Organisation du code (`public/espace/js/`) : `donnees.js` (modèle et nettoyage de tout ce qui entre), `store.js` et `stockage.js` (état et IndexedDB), `stats.js` (calculs, testés sous Node), `crypto.js` (sauvegarde chiffrée), `facturx/` (XML CII, PDF/A-3, export), `vendor/` (pdf-lib, chargé à la demande), `ui.js` (jamais d'`innerHTML`), `vues/` (une vue par page) et `main.js` (routeur).
 
 ## Contenu
 
@@ -46,5 +47,6 @@ Le dépôt `portfolio` reçoit le webhook GitHub de `gabinlsc/pro` : à chaque p
 ```bash
 npm install --no-save playwright   # une fois
 node tests/portail.mjs && node tests/espace.mjs && node tests/a11y.mjs
+MUSTANG_JAR=/chemin/Mustang-CLI-2.26.0.jar node tests/facturx.mjs   # validation externe des factures électroniques
 node --test "tests/unit/*.test.mjs"
 ```

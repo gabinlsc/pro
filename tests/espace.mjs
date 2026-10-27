@@ -18,6 +18,7 @@ const aller = async (hash) => { await page.evaluate((h) => { location.hash = h; 
 const bases = () => page.evaluate(async () => (indexedDB.databases ? (await indexedDB.databases()).map((d) => d.name) : []));
 const telechargement = async (declencheur) => { const [d] = await Promise.all([page.waitForEvent('download'), declencheur()]); return { nom: d.suggestedFilename(), contenu: readFileSync(await d.path(), 'utf8') }; };
 const dialogue = (s = 'dialog[open]') => page.locator(s);
+const telechargementBinaire = async (declencheur) => { const [d] = await Promise.all([page.waitForEvent('download'), declencheur()]); return { nom: d.suggestedFilename(), octets: readFileSync(await d.path()) }; };
 
 // ---- 1. rien n'est enregistré avant le clic
 await page.goto(base + '/espace/'); await page.waitForSelector('.bienvenue');
@@ -63,6 +64,14 @@ assert.match(await texte('.paiements'), /500,00 € \/ 1 320,00 €/); assert.ma
 await aller('#/'); await page.waitForSelector('.kpis'); assert.match(await texte('.kpis'), /Encaissé en \d{4}\s*500 €/); assert.match(await texte('.kpis'), /À encaisser\s*820 €/); ok('paiement partiel : reste à payer et tableau de bord');
 await aller('#/documents'); await page.click('.ligne-doc'); await page.click('text=Enregistrer un paiement'); await page.click('dialog footer button:has-text("Enregistrer")');
 assert.match(await texte('.statut-ligne'), /Payé/); ok('paiement du solde : la facture passe en « Payé »');
+
+// ---- 4 bis. facture électronique (Factur-X)
+await page.waitForSelector('.facturx:not([hidden])'); assert.match(await texte('.facturx'), /Prête : un PDF/);
+const fx = await telechargementBinaire(() => page.click('.facturx >> text=Télécharger le Factur-X (PDF)')); assert.match(fx.nom, /^facture-F-\d{4}-001\.pdf$/); assert.equal(fx.octets.subarray(0, 5).toString('latin1'), '%PDF-');
+const texteBrut = fx.octets.toString('latin1'); assert.match(texteBrut, /factur-x\.xml/); assert.match(texteBrut, /\/AFRelationship\s*\/Alternative/); assert.match(texteBrut, /GTS_PDFA1/); assert.match(texteBrut, /<pdfaid:part>3<\/pdfaid:part>/);
+const xmlFx = await telechargement(() => page.click('.facturx >> text=XML seul')); assert.match(xmlFx.contenu, /urn:cen\.eu:en16931:2017/); assert.match(xmlFx.contenu, /<ram:ID>F-\d{4}-001<\/ram:ID>/); assert.match(xmlFx.contenu, /VATEX-FR-FRANCHISE/);
+if (process.env.MUSTANG_JAR) { const { writeFileSync } = await import('node:fs'); const { execFileSync } = await import('node:child_process'); writeFileSync('/tmp/espace-fx.pdf', fx.octets); const out = execFileSync('java', ['-jar', process.env.MUSTANG_JAR, '--action', 'validate', '--source', '/tmp/espace-fx.pdf'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 }); assert.match(out, /isCompliant=true/); assert.match(out, /<xml>[\s\S]*?<summary status="valid"\/>/); }
+ok('facture électronique : PDF/A-3 avec factur-x.xml embarqué (profil EN 16931)' + (process.env.MUSTANG_JAR ? ', validé par Mustang' : ''));
 
 // ---- 5. devis, acceptation, conversion, avoir
 await aller('#/documents/nouveau?type=devis'); await page.waitForSelector('.feuille'); assert.match(await page.inputValue('[name="numero"]'), /^D-\d{4}-001$/);

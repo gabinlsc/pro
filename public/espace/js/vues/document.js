@@ -1,5 +1,5 @@
 // Éditeur de devis, factures, acomptes, soldes et avoirs : formulaire, aperçu en direct, statuts, paiements, conversion, impression.
-import { h, eur, dateFr, dialogue, champ, coche, confirmer, marquerErreur, debounce, remplacer } from '../ui.js';
+import { h, eur, dateFr, dialogue, champ, coche, confirmer, marquerErreur, debounce, remplacer, telecharger } from '../ui.js';
 import { icone } from '../icones.js';
 import { bouton, statutPastille } from '../composants.js';
 import { feuille } from '../feuille.js';
@@ -9,6 +9,8 @@ import { MODES } from '../lib/livre.js';
 import { nettoyerDocument, nouvelId } from '../donnees.js';
 import { numerosExistants, totalDocument, totalPaye, resteAPayer, FACTURANTS, estEnRetard, joursDeRetard } from '../stats.js';
 import { editerClient } from './clients.js';
+import { construireXml, peutEtreElectronique } from '../facturx/cii.js';
+import { nomFichier } from '../facturx/export.js';
 
 const lireChemin = (o, chemin) => chemin.split('.').reduce((a, k) => a?.[k], o);
 const ecrireChemin = (o, chemin, v) => { const p = chemin.split('.'); const dernier = p.pop(); p.reduce((a, k) => a[k], o)[dernier] = v; };
@@ -30,7 +32,7 @@ export function document({ store, regles, auj, params, requete, naviguer, nettoy
   }
   function appliquerClient(c) { doc.clientId = c?.id ?? ''; Object.assign(doc.doc.client, { type: c?.type ?? 'pro', nom: c?.nom ?? '', adresse: c?.adresse ?? '', cp: c?.cp ?? '', ville: c?.ville ?? '', siren: c?.siren ?? '', tvaIntra: c?.tvaIntra ?? '' }); }
   const verrouille = () => doc.statut !== 'brouillon';
-  let numeroAuto = params[0] === 'nouveau', touches = new Set(), apercuZone, erreursZone, totalZone, formZone, actionsZone;
+  let numeroAuto = params[0] === 'nouveau', touches = new Set(), apercuZone, erreursZone, totalZone, formZone, actionsZone, facturxZone;
 
   // ---- enregistrement
   const sauver = debounce(() => {
@@ -52,7 +54,26 @@ export function document({ store, regles, auj, params, requete, naviguer, nettoy
         h('ul', {}, [...groupes].map(([champ, message]) => h('li', {}, champ.startsWith('emetteur') ? h('a', { href: '#/reglages' }, message) : message)))) : h('div', { class: 'bilan ok' }, h('p', { class: 'bilan-titre' }, icone('check'), 'Prêt à être envoyé')),
       a.avertissements.length ? h('ul', { class: 'avertissements' }, a.avertissements.map((t) => h('li', {}, t))) : null);
     for (const el of formZone.querySelectorAll('[name]')) marquerErreur(el, touches.has(el.name) || verrouille() ? groupes.get(el.name) ?? '' : '');
-    totalZone.textContent = eur(a.total); return a;
+    totalZone.textContent = eur(a.total); majFacturX(a); return a;
+  }
+  // ---- facture électronique (Factur-X)
+  function majFacturX(a) {
+    if (!facturxZone) return;
+    if (!peutEtreElectronique(doc.doc.type)) { remplacer(facturxZone); facturxZone.hidden = true; return; }
+    facturxZone.hidden = false; const r = construireXml(doc.doc, a);
+    const exporter = async (btn, xmlSeul) => {
+      btn.setAttribute('aria-busy', 'true'); btn.disabled = true;
+      try {
+        const a2 = analyser(doc.doc, regles, auj), r2 = construireXml(doc.doc, a2); if (r2.erreurs.length) throw new Error(r2.erreurs[0]);
+        if (xmlSeul) { telecharger(nomFichier(doc.doc, 'xml'), r2.xml, 'application/xml'); toast('Fichier XML téléchargé.'); }
+        else { const { exporterFacturX } = await import('../facturx/export.js'); const f = await exporterFacturX({ doc: doc.doc, a: a2 }); telecharger(f.nom, f.octets, 'application/pdf'); toast('Facture Factur-X téléchargée.'); }
+      } catch (e) { toast(e.message, 'erreur'); } finally { btn.removeAttribute('aria-busy'); btn.disabled = false; }
+    };
+    remplacer(facturxZone, h('h3', {}, icone('zap'), 'Facture électronique (Factur-X)'),
+      r.erreurs.length ? h('ul', { class: 'facturx-manques' }, r.erreurs.map((t) => h('li', {}, icone('alert'), t))) : h('p', { class: 'aide' }, 'Prête : un PDF lisible qui embarque la facture structurée (profil EN 16931). À déposer sur votre plateforme de facturation électronique ou à envoyer à votre client.'),
+      h('div', { class: 'actions-doc' }, h('button', { class: 'btn petit', type: 'button', disabled: r.erreurs.length > 0 || undefined, onclick: (e) => exporter(e.currentTarget, false) }, icone('download'), h('span', {}, 'Télécharger le Factur-X (PDF)')),
+        h('button', { class: 'btn ghost petit', type: 'button', disabled: r.erreurs.length > 0 || undefined, onclick: (e) => exporter(e.currentTarget, true) }, icone('code'), h('span', {}, 'XML seul'))),
+      h('p', { class: 'aide' }, 'GLSC Pro produit le fichier ; il ne remplace pas une plateforme agréée, qui transmet la facture à l’administration.'));
   }
   const modifier = (chemin, valeur, structurel = false) => {
     ecrireChemin(doc.doc, chemin, valeur);
@@ -163,7 +184,7 @@ export function document({ store, regles, auj, params, requete, naviguer, nettoy
     remplacer(page, 
       h('a', { class: 'retour', href: '#/documents' }, icone('arrow', 'ico ico-retour'), 'Documents'),
       h('header', { class: 'entete' }, h('div', {}, h('h1', {}, `${TYPES[t].titre} ${params[0] === 'nouveau' && !enregistre ? '' : doc.doc.numero}`.trim()), h('p', { class: 'sous' }, 'Total : ', totalZone = h('b', {}, eur(0))))),
-      h('div', { class: 'doc-grille' }, h('div', { class: 'doc-gauche' }, actionsZone = h('section', { class: 'carte actions-carte' }), formZone = h('div', { class: 'formulaires' })), h('div', { class: 'doc-droite', tabindex: '0', role: 'region', 'aria-label': 'Aperçu du document' }, erreursZone = h('div', { class: 'erreurs-zone', role: 'status' }), apercuZone = h('div', { class: 'apercu' }))));
+      h('div', { class: 'doc-grille' }, h('div', { class: 'doc-gauche' }, actionsZone = h('section', { class: 'carte actions-carte' }), facturxZone = h('section', { class: 'carte facturx' }), formZone = h('div', { class: 'formulaires' })), h('div', { class: 'doc-droite', tabindex: '0', role: 'region', 'aria-label': 'Aperçu du document' }, erreursZone = h('div', { class: 'erreurs-zone', role: 'status' }), apercuZone = h('div', { class: 'apercu' }))));
     dessinerFormulaire(); dessinerActions(); maj();
   }
   dessiner();

@@ -13,7 +13,15 @@ jobs:
         with: { node-version: 22 }
       - run: bash -n deploy.sh
       - run: node --test "tests/unit/*.test.mjs"
-      - run: npm install --no-save playwright@1.49.1 axe-core@4.10.2 && npx playwright install --with-deps chromium
+      - run: npm ci && npx playwright install --with-deps chromium
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - name: Mustang (validateur Factur-X)
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/mustang.jar" https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/2.26.0/Mustang-CLI-2.26.0.jar
+          echo "42d7868cb68264874a7b8cab4c3587b03b23ccc7cd72373da917f66758bb9736  $RUNNER_TEMP/mustang.jar" | sha256sum -c -
+          echo "MUSTANG_JAR=$RUNNER_TEMP/mustang.jar" >> "$GITHUB_ENV"
+      - run: node tests/facturx.mjs
       - run: node tests/portail.mjs
       - run: node tests/espace.mjs
       - run: node tests/a11y.mjs
