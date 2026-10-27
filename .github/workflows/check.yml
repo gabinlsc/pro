@@ -12,5 +12,8 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: bash -n deploy.sh
-      - run: npm install --no-save playwright@1.49.1 && npx playwright install --with-deps chromium
+      - run: node --test "tests/unit/*.test.mjs"
+      - run: npm install --no-save playwright@1.49.1 axe-core@4.10.2 && npx playwright install --with-deps chromium
       - run: node tests/portail.mjs
+      - run: node tests/espace.mjs
+      - run: node tests/a11y.mjs
