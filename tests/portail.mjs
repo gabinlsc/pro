@@ -22,7 +22,7 @@ ok('pages : pas de code en ligne, liens locaux valides, noindex, un seul h1');
 const index = readFileSync(join(pub, 'index.html'), 'utf8');
 for (const u of ['https://gst.glsc.fr', 'https://admin.glsc.fr', 'https://studio.glsc.fr', 'https://compta.glsc.fr']) assert.ok(index.includes(`href="${u}"`), u);
 const css = readFileSync(join(pub, 'assets/pro.css'), 'utf8'); assert.doesNotMatch(css, /https?:\/\//); assert.doesNotMatch(css, /@import/); assert.match(css, /#2447d6/i); assert.match(css, /Inter Display/);
-ok('quatre portes : StudioGLSC, admin, studio, compta ; CSS aux couleurs et polices du kit de marque, sans ressource externe');
+ok('quatre portes : admin pro, admin, studio, compta ; CSS aux couleurs et polices du kit de marque, sans ressource externe');
 
 const srv = createServer((q, r) => { const p = join(pub, decodeURIComponent(new URL(q.url, 'http://x').pathname)); const f = existsSync(p) && !p.endsWith('/') ? p : join(pub, 'index.html'); r.setHeader('content-type', types[extname(f)] ?? 'application/octet-stream'); r.setHeader('content-security-policy', csp); r.end(readFileSync(f)); });
 await new Promise((res) => srv.listen(0, '127.0.0.1', res)); const base = `http://127.0.0.1:${srv.address().port}`;
