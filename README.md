@@ -2,7 +2,7 @@
 
 Deux choses dans ce dépôt : le **portail** (page d'entrée) et **GLSC Pro**, un espace de travail pour indépendants (`/espace/`).
 
-Point d'entrée de l'espace pro : une page avec trois portes, **Admin** ([admin.glsc.fr](https://admin.glsc.fr)), **Studio** ([studio.glsc.fr](https://studio.glsc.fr)) et **Compta** ([compta.glsc.fr](https://compta.glsc.fr)), plus des raccourcis clavier (A, S, C).
+Point d'entrée de l'espace pro : une page avec trois portes, **Admin** ([admin.glsc.fr](https://admin.glsc.fr)), **Studio** ([studio.glsc.fr](https://studio.glsc.fr)) et **Compta** ([compta.glsc.fr](https://compta.glsc.fr)), plus des raccourcis clavier (G, A, S, C).
 
 Le portail n'a pas de connexion à lui : chaque espace garde la sienne (l'admin demande son identifiant et son code à usage unique). Il ne contient aucun secret, aucune donnée, aucun cookie, aucun appel à un service tiers, et la page n'est pas indexée par les moteurs de recherche.
 

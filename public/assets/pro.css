@@ -25,7 +25,7 @@ a { color: inherit; }
 h1 { margin-top: 10px; font: 700 clamp(2.4rem, 6vw, 4rem)/1.05 var(--display); letter-spacing: -.03em; }
 .lead { margin-top: 16px; max-width: 36rem; font-size: 1.2rem; color: #e9eefe; }
 main { margin-top: -72px; position: relative; }
-.tiles { display: grid; gap: 20px; grid-template-columns: repeat(3, 1fr); }
+.tiles { display: grid; gap: 20px; grid-template-columns: repeat(2, 1fr); }
 .tiles li { display: flex; }
 .tile { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 280px; padding: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); text-decoration: none; transition: transform .18s, border-color .18s, box-shadow .18s; }
 .tile:hover { transform: translateY(-4px); border-color: var(--accent); }
